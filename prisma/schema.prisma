@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(100)
+  slug      String    @unique @db.VarChar(100)
+  parentId  Int?
+  parent    Category? @relation("CategoryTree", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryTree")
+  sortOrder Int       @default(0)
+  products  Product[]
+  createdAt DateTime  @default(now())
+
+  @@map("categories")
+}
+
+model Product {
+  id              Int      @id @default(autoincrement())
+  sku             String   @unique @db.VarChar(50)
+  name            String   @db.VarChar(255)
+  description     String?  @db.Text
+  supplierPrice   Decimal  @db.Decimal(14, 2)
+  resellerPrice   Decimal  @db.Decimal(14, 2)
+  currency        String   @default("ARS") @db.VarChar(3)
+  stockStatus     Boolean  @default(true)
+  categoryId      Int?
+  category        Category? @relation(fields: [categoryId], references: [id])
+  imageUrl        String?  @db.VarChar(500)
+  localImage      String?  @db.VarChar(255)
+  totalineUrl     String?  @db.VarChar(500)
+  isManual        Boolean  @default(false)
+  active          Boolean  @default(true)
+  lastSynced      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([active])
+  @@map("products")
+}
+
+model SyncLog {
+  id             Int      @id @default(autoincrement())
+  type           String   @db.VarChar(10)
+  startedAt      DateTime @default(now())
+  finishedAt     DateTime?
+  productsTotal  Int      @default(0)
+  productsAdded  Int      @default(0)
+  productsUpdated Int     @default(0)
+  productsRemoved Int     @default(0)
+  errors         Int      @default(0)
+  errorDetails   String?  @db.Text
+
+  @@map("sync_logs")
+}
+
+model Setting {
+  id    Int    @id @default(autoincrement())
+  key   String @unique @db.VarChar(50)
+  value String @db.Text
+
+  @@map("settings")
+}
