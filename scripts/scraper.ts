@@ -6,19 +6,20 @@
 import "dotenv/config";
 import puppeteer from "puppeteer";
 import { PrismaClient } from "@prisma/client";
-import * as fs from "fs";
-import * as path from "path";
-import * as https from "https";
+import { v2 as cloudinary } from "cloudinary";
 
 const prisma = new PrismaClient();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const TOTALINE_URL = process.env.TOTALINE_URL || "https://store.totaline.ar";
 const TOTALINE_EMAIL = process.env.TOTALINE_EMAIL || "";
 const TOTALINE_PASSWORD = process.env.TOTALINE_PASSWORD || "";
 const MARKUP = parseInt(process.env.MARKUP_PERCENTAGE || "50");
-const PRODUCTS_DIR = path.join(process.cwd(), "public", "products");
-
-if (!fs.existsSync(PRODUCTS_DIR)) fs.mkdirSync(PRODUCTS_DIR, { recursive: true });
 
 interface ScrapedProduct {
   sku: string;
@@ -30,16 +31,22 @@ interface ScrapedProduct {
   url: string;
 }
 
-async function downloadImage(url: string, filepath: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (fs.existsSync(filepath)) { resolve(true); return; }
-    const file = fs.createWriteStream(filepath);
-    https.get(url, (res) => {
-      if (res.statusCode !== 200) { resolve(false); return; }
-      res.pipe(file);
-      file.on("finish", () => { file.close(); resolve(true); });
-    }).on("error", () => resolve(false));
-  });
+async function uploadToCloudinary(url: string, sku: string): Promise<string | null> {
+  try {
+    const result = await cloudinary.uploader.upload(url, {
+      folder: "perez-refrigeracion",
+      public_id: sku,
+      overwrite: false,
+      resource_type: "image",
+    });
+    return result.secure_url;
+  } catch (e: any) {
+    if (e?.http_code === 400 && e?.message?.includes("already exists")) {
+      // Already uploaded, return existing URL
+      return `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/perez-refrigeracion/${sku}`;
+    }
+    return null;
+  }
 }
 
 function slugify(text: string): string {
@@ -189,14 +196,10 @@ async function syncProducts(products: ScrapedProduct[]) {
     const categoryId = categoryMap.get(p.category) || null;
 
     try {
-      // Download image
+      // Upload image to Cloudinary
       let localImage: string | null = null;
       if (p.imageUrl && !p.imageUrl.includes("placeholder")) {
-        const ext = p.imageUrl.split(".").pop()?.split("?")[0] || "jpg";
-        const filename = `${p.sku}.${ext}`;
-        const filepath = path.join(PRODUCTS_DIR, filename);
-        const downloaded = await downloadImage(p.imageUrl, filepath);
-        if (downloaded) localImage = `/products/${filename}`;
+        localImage = await uploadToCloudinary(p.imageUrl, p.sku);
       }
 
       const existing = await prisma.product.findUnique({ where: { sku: p.sku } });

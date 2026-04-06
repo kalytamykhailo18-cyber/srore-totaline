@@ -4,6 +4,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "store.totaline.ar" },
       { protocol: "https", hostname: "**.totaline.ar" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
     ],
     unoptimized: true,
   },
