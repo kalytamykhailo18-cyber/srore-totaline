@@ -19,8 +19,9 @@ export default function Navbar() {
     <nav className="bg-[#1e3a5f] text-white sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="text-xl font-bold tracking-wide">
-            REFRIGERACIÓN PEREZ
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <img src="/logo.png" alt="Refrigeración Perez" className="h-10 w-10 rounded-full" />
+            <span className="text-lg font-bold tracking-wide hidden sm:inline">REFRIGERACIÓN PEREZ</span>
           </Link>
 
           {/* Desktop search */}
