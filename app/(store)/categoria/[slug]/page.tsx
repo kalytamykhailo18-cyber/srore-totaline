@@ -46,16 +46,14 @@ export default function CategoryPage() {
   }, [slug, page]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="px-4 py-6">
       <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <Link href="/" className="hover:text-[#1e3a5f]">Inicio</Link>
-        <span>/</span>
-        <Link href="/categorias" className="hover:text-[#1e3a5f]">Categorías</Link>
+        <Link href="/" className="hover:text-brand-800">Inicio</Link>
         <span>/</span>
         <span className="text-gray-800 font-medium">{categoryName || slug}</span>
       </div>
 
-      <h1 className="text-2xl font-bold text-[#1e3a5f] mb-6">{categoryName || "Categoría"}</h1>
+      <h1 className="text-2xl font-bold text-brand-800 mb-6">{categoryName || "Categoría"}</h1>
 
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

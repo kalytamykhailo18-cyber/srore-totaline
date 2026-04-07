@@ -16,7 +16,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-[#1e3a5f] text-white sticky top-0 z-50 shadow-lg">
+    <nav className="bg-brand-800 text-white sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2 shrink-0">
@@ -25,22 +25,32 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop search */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-8">
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xs mx-4">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar productos..."
-              className="w-full px-4 py-2 rounded-l-lg text-gray-800 focus:outline-none"
+              className="w-full px-4 py-2 rounded-l-lg text-gray-800 focus:outline-none text-sm"
             />
-            <button type="submit" className="bg-[#2c5282] px-4 py-2 rounded-r-lg hover:bg-[#3b82f6] transition-colors">
+            <button type="submit" className="bg-brand-600 px-3 py-2 rounded-r-lg hover:bg-brand-500 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
           </form>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs border border-white/30 rounded-lg hover:bg-white/10 transition-colors"
+              title="Panel de administración"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Admin
+            </Link>
             <Link href="/carrito" className="relative p-2 hover:bg-white/10 rounded-lg transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
@@ -63,7 +73,7 @@ export default function Navbar() {
 
         {/* Mobile search + menu */}
         {menuOpen && (
-          <div className="md:hidden pb-4 space-y-3">
+          <div className="md:hidden pb-4 space-y-2">
             <form onSubmit={handleSearch} className="flex">
               <input
                 type="text"
@@ -72,14 +82,17 @@ export default function Navbar() {
                 placeholder="Buscar productos..."
                 className="w-full px-4 py-2 rounded-l-lg text-gray-800 focus:outline-none"
               />
-              <button type="submit" className="bg-[#2c5282] px-4 py-2 rounded-r-lg">
+              <button type="submit" className="bg-brand-600 px-4 py-2 rounded-r-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
             </form>
-            <Link href="/categorias" className="block px-3 py-2 hover:bg-white/10 rounded" onClick={() => setMenuOpen(false)}>
-              Categorías
+            <Link href="/carrito" className="block px-3 py-2 hover:bg-white/10 rounded" onClick={() => setMenuOpen(false)}>
+              Mi Carrito
+            </Link>
+            <Link href="/admin" className="block px-3 py-2 hover:bg-white/10 rounded" onClick={() => setMenuOpen(false)}>
+              Admin
             </Link>
           </div>
         )}

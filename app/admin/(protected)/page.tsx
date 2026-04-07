@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   const [info, setInfo] = useState<SyncInfo | null>(null);
 
   useEffect(() => {
-    fetch("/api/sync").then((r) => r.json()).then(setInfo).catch(() => {});
+    fetch("/api/admin/sync").then((r) => r.json()).then(setInfo).catch(() => {});
   }, []);
 
   return (
@@ -29,15 +29,15 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-white rounded-xl border p-6">
           <p className="text-sm text-gray-500">Productos activos</p>
-          <p className="text-3xl font-bold text-[#1e3a5f] mt-1">{info?.productCount ?? "..."}</p>
+          <p className="text-3xl font-bold text-brand-800 mt-1">{info?.productCount ?? "..."}</p>
         </div>
         <div className="bg-white rounded-xl border p-6">
           <p className="text-sm text-gray-500">Categorías</p>
-          <p className="text-3xl font-bold text-[#1e3a5f] mt-1">{info?.categoryCount ?? "..."}</p>
+          <p className="text-3xl font-bold text-brand-800 mt-1">{info?.categoryCount ?? "..."}</p>
         </div>
         <div className="bg-white rounded-xl border p-6">
           <p className="text-sm text-gray-500">Última sincronización</p>
-          <p className="text-lg font-bold text-[#1e3a5f] mt-1">
+          <p className="text-lg font-bold text-brand-800 mt-1">
             {info?.lastSync ? new Date(info.lastSync.startedAt).toLocaleString("es-AR") : "Nunca"}
           </p>
           {info?.lastSync && (

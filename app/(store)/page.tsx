@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
-import Link from "next/link";
 
 interface Product {
   id: number;
@@ -14,16 +13,8 @@ interface Product {
   category: { name: string; slug: string } | null;
 }
 
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  _count: { products: number };
-}
-
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -34,13 +25,6 @@ export default function HomePage() {
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q") || "";
     if (q) setSearch(q);
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/categories")
-      .then((r) => r.json())
-      .then(setCategories)
-      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -61,27 +45,7 @@ export default function HomePage() {
   }, [search, page]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* Categories bar */}
-      {!search && categories.length > 0 && (
-        <div className="mb-6 overflow-x-auto">
-          <div className="flex gap-2 pb-2">
-            {categories
-              .filter((c) => c._count.products > 0)
-              .map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/categoria/${cat.slug}`}
-                  className="whitespace-nowrap px-4 py-2 bg-white border border-gray-200 rounded-full text-sm hover:bg-[#1e3a5f] hover:text-white hover:border-[#1e3a5f] transition-colors"
-                >
-                  {cat.name} <span className="text-gray-400 ml-1">({cat._count.products})</span>
-                </Link>
-              ))}
-          </div>
-        </div>
-      )}
-
-      {/* Search indicator */}
+    <div className="px-4 py-6">
       {search && (
         <div className="mb-4 flex items-center gap-3">
           <p className="text-gray-600">
@@ -99,7 +63,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Products grid */}
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -129,7 +92,6 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-8">
               <button

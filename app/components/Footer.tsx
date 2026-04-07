@@ -5,7 +5,7 @@ const instagram = "refrigeracion__perez";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1e3a5f] text-white mt-auto">
+    <footer className="bg-brand-800 text-white mt-auto">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -46,7 +46,6 @@ export default function Footer() {
             <h3 className="text-lg font-bold mb-3">Enlaces</h3>
             <div className="space-y-2 text-sm text-gray-300">
               <Link href="/" className="block hover:text-white transition-colors">Inicio</Link>
-              <Link href="/categorias" className="block hover:text-white transition-colors">Categorías</Link>
               <Link href="/carrito" className="block hover:text-white transition-colors">Mi Carrito</Link>
             </div>
           </div>

@@ -22,7 +22,7 @@ function formatPrice(price: number) {
 
 export default function ProductCard({ product }: Props) {
   const { addItem } = useCart();
-  const imgSrc = product.localImage || product.imageUrl || "/placeholder.png";
+  const imgSrc = product.localImage || product.imageUrl || "/logo.png";
 
   return (
     <div className="card flex flex-col">
@@ -43,16 +43,16 @@ export default function ProductCard({ product }: Props) {
       </Link>
       <div className="p-3 flex flex-col flex-1">
         {product.category && (
-          <Link href={`/categoria/${product.category.slug}`} className="text-xs text-blue-600 hover:underline mb-1">
+          <Link href={`/categoria/${product.category.slug}`} className="text-xs text-brand-600 hover:underline mb-1">
             {product.category.name}
           </Link>
         )}
-        <Link href={`/producto/${product.id}`} className="text-sm font-medium text-gray-800 hover:text-[#1e3a5f] line-clamp-2 mb-2 flex-1">
+        <Link href={`/producto/${product.id}`} className="text-sm font-medium text-gray-800 hover:text-brand-800 line-clamp-2 mb-2 flex-1">
           {product.name}
         </Link>
         <p className="text-xs text-gray-400 mb-1">SKU: {product.sku}</p>
         <div className="flex items-center justify-between mt-auto">
-          <span className="text-lg font-bold text-[#1e3a5f]">{formatPrice(product.resellerPrice)}</span>
+          <span className="text-lg font-bold text-brand-800">{formatPrice(product.resellerPrice)}</span>
           <button
             onClick={() =>
               addItem({
@@ -64,7 +64,7 @@ export default function ProductCard({ product }: Props) {
               })
             }
             disabled={!product.stockStatus}
-            className="bg-[#1e3a5f] text-white p-2 rounded-lg hover:bg-[#2c5282] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-brand-800 text-white p-2 rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             title="Agregar al carrito"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

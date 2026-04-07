@@ -98,7 +98,7 @@ export default function AdminProducts() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Productos ({total})</h1>
         <button onClick={() => setShowForm(!showForm)} className="btn-primary text-sm">
-          + Agregar producto manual
+          {showForm ? "Cancelar" : "+ Agregar producto manual"}
         </button>
       </div>
 

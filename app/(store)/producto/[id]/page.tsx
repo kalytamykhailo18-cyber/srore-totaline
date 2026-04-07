@@ -58,7 +58,7 @@ export default function ProductPage() {
     );
   }
 
-  const imgSrc = product.localImage || product.imageUrl || "/placeholder.png";
+  const imgSrc = product.localImage || product.imageUrl || "/logo.png";
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5491171409081";
 
   const handleAdd = () => {
@@ -82,11 +82,11 @@ export default function ProductPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <Link href="/" className="hover:text-[#1e3a5f]">Inicio</Link>
+        <Link href="/" className="hover:text-brand-800">Inicio</Link>
         {product.category && (
           <>
             <span>/</span>
-            <Link href={`/categoria/${product.category.slug}`} className="hover:text-[#1e3a5f]">{product.category.name}</Link>
+            <Link href={`/categoria/${product.category.slug}`} className="hover:text-brand-800">{product.category.name}</Link>
           </>
         )}
         <span>/</span>
@@ -116,7 +116,7 @@ export default function ProductPage() {
           <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.name}</h1>
           <p className="text-sm text-gray-400 mb-4">SKU: {product.sku}</p>
 
-          <div className="text-3xl font-bold text-[#1e3a5f] mb-6">
+          <div className="text-3xl font-bold text-brand-800 mb-6">
             {formatPrice(product.resellerPrice)}
           </div>
 

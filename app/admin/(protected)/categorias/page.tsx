@@ -81,7 +81,7 @@ export default function AdminCategories() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Categorías ({categories.length})</h1>
         <button onClick={() => setShowForm(!showForm)} className="btn-primary text-sm">
-          + Nueva categoría
+          {showForm ? "Cancelar" : "+ Nueva categoría"}
         </button>
       </div>
 
@@ -128,7 +128,7 @@ export default function AdminCategories() {
                       <button onClick={() => setEditId(null)} className="text-xs text-gray-400 hover:underline">X</button>
                     </div>
                   ) : (
-                    <span className="font-medium cursor-pointer hover:text-[#1e3a5f]" onClick={() => { setEditId(cat.id); setEditName(cat.name); }}>
+                    <span className="font-medium cursor-pointer hover:text-brand-800" onClick={() => { setEditId(cat.id); setEditName(cat.name); }}>
                       {cat.name}
                     </span>
                   )}

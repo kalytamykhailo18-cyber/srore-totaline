@@ -106,8 +106,10 @@ async function scrapeCategory(page: puppeteer.Page, categoryUrl: string, categor
         const linkEl = el.querySelector("a.product-item-link") as HTMLAnchorElement;
 
         const name = nameEl?.textContent?.trim() || "";
-        const priceStr = priceEl?.getAttribute("data-price-amount") || priceEl?.textContent?.replace(/[^0-9.,]/g, "") || "0";
-        const price = parseFloat(priceStr.replace(",", ".")) || 0;
+        // Always parse from displayed text (Argentine format: $1.234.567,89)
+        // Remove non-digits/dots/commas, then remove dots (thousands), then replace comma with dot (decimal)
+        const txt = priceEl?.textContent?.replace(/[^0-9.,]/g, "") || "0";
+        const price = parseFloat(txt.replace(/\./g, "").replace(",", ".")) || 0;
         const sku = skuEl?.getAttribute("data-product-sku") ||
                     el.querySelector("[data-product-id]")?.getAttribute("data-product-id") || "";
         const imageUrl = imgEl?.src || imgEl?.getAttribute("data-src") || "";
@@ -164,6 +166,17 @@ async function getCategories(page: puppeteer.Page): Promise<Array<{ name: string
   return categories;
 }
 
+// Generic parent categories — products in these should go to a more specific sub-category if available
+const GENERIC_CATEGORIES = new Set([
+  "Insumos y Partes",
+  "Linea Residencial",
+  "Linea Light Commercial",
+  "Linea Commercial",
+  "Heating",
+  "Linea Industrial",
+  "Linea Comercial",
+]);
+
 async function syncProducts(products: ScrapedProduct[]) {
   console.log(`\nSyncing ${products.length} products to database...`);
 
@@ -172,6 +185,15 @@ async function syncProducts(products: ScrapedProduct[]) {
   });
 
   let added = 0, updated = 0, errors = 0;
+
+  // Sort products: specific categories first, generic parents last
+  // Within the same dedup, the more specific category wins
+  products.sort((a, b) => {
+    const aGeneric = GENERIC_CATEGORIES.has(a.category) ? 1 : 0;
+    const bGeneric = GENERIC_CATEGORIES.has(b.category) ? 1 : 0;
+    return aGeneric - bGeneric;
+  });
+
   const seenSkus = new Set<string>();
 
   // Create/update categories
@@ -196,14 +218,24 @@ async function syncProducts(products: ScrapedProduct[]) {
     const categoryId = categoryMap.get(p.category) || null;
 
     try {
-      // Upload image to Cloudinary
+      // Skip Totaline placeholder/branding images
+      const isPlaceholder = !p.imageUrl ||
+        p.imageUrl.includes("placeholder") ||
+        p.imageUrl.includes("logo-totaline") ||
+        /\d+_logo/i.test(p.imageUrl);
+
+      // Upload image to Cloudinary (skip placeholders)
       let localImage: string | null = null;
-      if (p.imageUrl && !p.imageUrl.includes("placeholder")) {
-        localImage = await uploadToCloudinary(p.imageUrl, p.sku);
+      let imageUrl: string | null = isPlaceholder ? null : p.imageUrl;
+      if (imageUrl) {
+        localImage = await uploadToCloudinary(imageUrl, p.sku);
       }
 
       const existing = await prisma.product.findUnique({ where: { sku: p.sku } });
       if (existing) {
+        // For placeholder products, clear out any old image references
+        const newImageUrl = isPlaceholder ? null : (imageUrl || existing.imageUrl);
+        const newLocalImage = isPlaceholder ? null : (localImage || existing.localImage);
         await prisma.product.update({
           where: { sku: p.sku },
           data: {
@@ -212,8 +244,8 @@ async function syncProducts(products: ScrapedProduct[]) {
             resellerPrice,
             stockStatus: p.inStock,
             categoryId,
-            imageUrl: p.imageUrl || existing.imageUrl,
-            localImage: localImage || existing.localImage,
+            imageUrl: newImageUrl,
+            localImage: newLocalImage,
             totalineUrl: p.url || existing.totalineUrl,
             lastSynced: new Date(),
             active: true,
@@ -229,7 +261,7 @@ async function syncProducts(products: ScrapedProduct[]) {
             resellerPrice,
             stockStatus: p.inStock,
             categoryId,
-            imageUrl: p.imageUrl,
+            imageUrl,
             localImage,
             totalineUrl: p.url,
             lastSynced: new Date(),

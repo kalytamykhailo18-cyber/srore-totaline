@@ -23,7 +23,7 @@ export default function AdminSync() {
   }, []);
 
   const fetchLogs = () => {
-    fetch("/api/sync")
+    fetch("/api/admin/sync")
       .then((r) => r.json())
       .then((data) => {
         if (data.lastSync) setLogs([data.lastSync]);
@@ -32,23 +32,16 @@ export default function AdminSync() {
   };
 
   const handleSync = async () => {
+    if (!confirm("¿Iniciar la sincronización con Totaline? Puede tardar varios minutos.")) return;
     setSyncing(true);
     setStatus("Iniciando sincronización...");
     try {
-      const adminKey = prompt("Clave de administrador:");
-      if (!adminKey) { setSyncing(false); setStatus(""); return; }
-
-      const res = await fetch("/api/sync", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${adminKey}` },
-      });
-
+      const res = await fetch("/api/admin/sync", { method: "POST" });
       if (!res.ok) {
         const err = await res.json();
         setStatus(`Error: ${err.error}`);
         return;
       }
-
       setStatus("Sincronización iniciada. El proceso puede tardar varios minutos. Recargá la página para ver el resultado.");
     } catch {
       setStatus("Error al iniciar la sincronización");

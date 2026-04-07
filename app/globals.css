@@ -16,8 +16,45 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
 }
 
+/* Brand-colored focus states for all form inputs */
+@layer base {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="date"],
+  input[type="month"],
+  textarea,
+  select {
+    @apply outline-none transition-colors;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="date"]:focus,
+  input[type="month"]:focus,
+  textarea:focus,
+  select:focus {
+    @apply border-brand-800 ring-2 ring-brand-800/20;
+  }
+
+  /* Selection color */
+  ::selection {
+    background: #1e3a5f;
+    color: white;
+  }
+}
+
 .btn-primary {
-  @apply bg-[#1e3a5f] text-white px-4 py-2 rounded-lg hover:bg-[#2c5282] transition-colors font-medium;
+  @apply bg-brand-800 text-white px-4 py-2 rounded-lg hover:bg-brand-600 transition-colors font-medium;
 }
 
 .btn-whatsapp {
@@ -26,4 +63,31 @@ body {
 
 .card {
   @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow;
+}
+
+/* Custom scrollbar — brand color */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f5fa;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e3a5f;
+  border-radius: 5px;
+  border: 2px solid #f0f5fa;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2c5282;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1e3a5f #f0f5fa;
 }

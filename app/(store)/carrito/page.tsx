@@ -38,7 +38,7 @@ export default function CartPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#1e3a5f]">Mi Carrito ({items.length})</h1>
+        <h1 className="text-2xl font-bold text-brand-800">Mi Carrito ({items.length})</h1>
         <button onClick={clearCart} className="text-sm text-red-500 hover:underline">
           Vaciar carrito
         </button>
@@ -62,7 +62,7 @@ export default function CartPage() {
             <div className="flex-1 min-w-0">
               <p className="font-medium text-gray-800 text-sm truncate">{item.name}</p>
               <p className="text-xs text-gray-400">SKU: {item.sku}</p>
-              <p className="text-sm font-bold text-[#1e3a5f] mt-1">{formatPrice(item.price * item.qty)}</p>
+              <p className="text-sm font-bold text-brand-800 mt-1">{formatPrice(item.price * item.qty)}</p>
             </div>
 
             <div className="flex items-center gap-1">
@@ -88,7 +88,7 @@ export default function CartPage() {
       <div className="bg-white rounded-xl border p-6 sticky bottom-4">
         <div className="flex items-center justify-between mb-4">
           <span className="text-lg font-medium text-gray-700">Total</span>
-          <span className="text-2xl font-bold text-[#1e3a5f]">{formatPrice(totalPrice)}</span>
+          <span className="text-2xl font-bold text-brand-800">{formatPrice(totalPrice)}</span>
         </div>
         <button onClick={handleCheckout} className="btn-whatsapp w-full justify-center text-lg py-3">
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
