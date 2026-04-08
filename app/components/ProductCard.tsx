@@ -9,6 +9,7 @@ interface Props {
     sku: string;
     name: string;
     resellerPrice: number;
+    resellerPriceUsd?: number | null;
     localImage: string | null;
     imageUrl: string | null;
     stockStatus: boolean;
@@ -52,7 +53,12 @@ export default function ProductCard({ product }: Props) {
         </Link>
         <p className="text-xs text-gray-400 mb-1">SKU: {product.sku}</p>
         <div className="flex items-center justify-between mt-auto">
-          <span className="text-lg font-bold text-brand-800">{formatPrice(product.resellerPrice)}</span>
+          <div>
+            <span className="text-lg font-bold text-brand-800">{formatPrice(product.resellerPrice)}</span>
+            {product.resellerPriceUsd && (
+              <p className="text-[10px] text-gray-400 leading-tight">USD ${product.resellerPriceUsd.toLocaleString("es-AR")}</p>
+            )}
+          </div>
           <button
             onClick={() =>
               addItem({

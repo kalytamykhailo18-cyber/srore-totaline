@@ -11,7 +11,7 @@ export default function Navbar() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (search.trim()) {
-      window.location.href = `/?q=${encodeURIComponent(search.trim())}`;
+      window.location.href = `/productos?q=${encodeURIComponent(search.trim())}`;
     }
   };
 
@@ -23,6 +23,13 @@ export default function Navbar() {
             <img src="/logo.png" alt="Refrigeración Perez" className="h-10 w-10 rounded-full" />
             <span className="text-lg font-bold tracking-wide hidden sm:inline">REFRIGERACIÓN PEREZ</span>
           </Link>
+
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-1">
+            <Link href="/productos" className="px-3 py-2 text-sm hover:bg-white/10 rounded-lg transition-colors">
+              Productos
+            </Link>
+          </div>
 
           {/* Desktop search */}
           <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xs mx-4">
@@ -88,6 +95,9 @@ export default function Navbar() {
                 </svg>
               </button>
             </form>
+            <Link href="/productos" className="block px-3 py-2 hover:bg-white/10 rounded" onClick={() => setMenuOpen(false)}>
+              Productos
+            </Link>
             <Link href="/carrito" className="block px-3 py-2 hover:bg-white/10 rounded" onClick={() => setMenuOpen(false)}>
               Mi Carrito
             </Link>

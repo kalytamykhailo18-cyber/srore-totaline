@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../lib/prisma";
 
+async function getUsdRate(): Promise<number> {
+  const setting = await prisma.setting.findUnique({ where: { key: "usd_rate" } });
+  return parseFloat(setting?.value || "1") || 1;
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const q = searchParams.get("q") || "";
@@ -18,7 +23,7 @@ export async function GET(req: NextRequest) {
   }
   if (categoryId) where.categoryId = parseInt(categoryId);
 
-  const [products, total] = await Promise.all([
+  const [products, total, usdRate] = await Promise.all([
     prisma.product.findMany({
       where,
       include: { category: { select: { name: true, slug: true } } },
@@ -27,18 +32,29 @@ export async function GET(req: NextRequest) {
       take: limit,
     }),
     prisma.product.count({ where }),
+    getUsdRate(),
   ]);
 
-  const serialized = products.map((p) => ({
-    ...p,
-    supplierPrice: Number(p.supplierPrice),
-    resellerPrice: Number(p.resellerPrice),
-  }));
+  let hasUsd = false;
+  const serialized = products.map((p) => {
+    const isUsd = p.currency === "USD";
+    if (isUsd) hasUsd = true;
+    const reseller = Number(p.resellerPrice);
+    return {
+      ...p,
+      supplierPrice: Number(p.supplierPrice),
+      resellerPrice: isUsd ? Math.round(reseller * usdRate) : reseller,
+      resellerPriceUsd: isUsd ? reseller : null,
+      currency: p.currency,
+    };
+  });
 
   return NextResponse.json({
     products: serialized,
     total,
     page,
     totalPages: Math.ceil(total / limit),
+    usdRate,
+    hasUsd,
   });
 }

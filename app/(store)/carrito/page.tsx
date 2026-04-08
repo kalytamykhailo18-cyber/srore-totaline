@@ -30,7 +30,7 @@ export default function CartPage() {
         </svg>
         <h1 className="text-2xl font-bold text-gray-700 mb-2">Tu carrito está vacío</h1>
         <p className="text-gray-500 mb-6">Agregá productos para hacer tu pedido</p>
-        <Link href="/" className="btn-primary inline-block">Ver productos</Link>
+        <Link href="/productos" className="btn-primary inline-block">Ver productos</Link>
       </div>
     );
   }
@@ -69,7 +69,16 @@ export default function CartPage() {
               <button onClick={() => updateQty(item.id, item.qty - 1)} className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100">
                 -
               </button>
-              <span className="w-8 text-center text-sm font-medium">{item.qty}</span>
+              <input
+                type="number"
+                min="1"
+                value={item.qty}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value);
+                  if (!isNaN(v) && v > 0) updateQty(item.id, v);
+                }}
+                className="w-14 h-8 text-center text-sm font-medium border rounded focus:outline-none focus:border-brand-800 focus:ring-1 focus:ring-brand-800"
+              />
               <button onClick={() => updateQty(item.id, item.qty + 1)} className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100">
                 +
               </button>

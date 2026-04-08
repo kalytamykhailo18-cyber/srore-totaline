@@ -11,7 +11,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-bold mb-3">REFRIGERACIÓN PEREZ</h3>
             <p className="text-gray-300 text-sm">
-              Venta de productos de refrigeración y climatización. Repuestos, accesorios y equipos Totaline.
+              Venta de productos de refrigeración y climatización. Repuestos, accesorios y equipos para profesionales del rubro.
             </p>
           </div>
           <div>

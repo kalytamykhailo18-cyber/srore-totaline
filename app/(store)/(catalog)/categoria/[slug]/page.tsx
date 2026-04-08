@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import ProductCard from "../../../components/ProductCard";
+import ProductCard from "../../../../components/ProductCard";
 import Link from "next/link";
 
 interface Product {

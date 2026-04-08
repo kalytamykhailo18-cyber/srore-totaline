@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useCart } from "../../../components/CartProvider";
-import { formatPrice } from "../../../components/ProductCard";
+import { useCart } from "../../../../components/CartProvider";
+import { formatPrice } from "../../../../components/ProductCard";
 
 interface Product {
   id: number;

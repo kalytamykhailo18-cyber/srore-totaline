@@ -5,7 +5,7 @@ const businessName = process.env.NEXT_PUBLIC_BUSINESS_NAME || "Perez Refrigeraci
 
 export const metadata: Metadata = {
   title: `${businessName} — Productos de Refrigeración`,
-  description: "Venta de productos de refrigeración y climatización. Totaline, repuestos y accesorios.",
+  description: "Venta de productos de refrigeración y climatización. Repuestos, accesorios y equipos para profesionales.",
   icons: { icon: "/favicon.ico" },
 };
 

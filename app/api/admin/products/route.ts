@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
 // POST: Create manual product
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { sku, name, description, resellerPrice, categoryId, imageUrl, stockStatus } = body;
+  const { sku, name, description, resellerPrice, categoryId, imageUrl, stockStatus, currency } = body;
 
   if (!sku || !name || !resellerPrice) {
     return NextResponse.json({ error: "SKU, nombre y precio son obligatorios" }, { status: 400 });
@@ -63,6 +63,7 @@ export async function POST(req: NextRequest) {
       description: description || null,
       supplierPrice: resellerPrice,
       resellerPrice,
+      currency: currency === "USD" ? "USD" : "ARS",
       categoryId: categoryId || null,
       imageUrl: imageUrl || null,
       stockStatus: stockStatus !== false,
@@ -88,6 +89,7 @@ export async function PATCH(req: NextRequest) {
   if (data.stockStatus !== undefined) update.stockStatus = data.stockStatus;
   if (data.active !== undefined) update.active = data.active;
   if (data.imageUrl !== undefined) update.imageUrl = data.imageUrl;
+  if (data.currency !== undefined) update.currency = data.currency === "USD" ? "USD" : "ARS";
 
   const product = await prisma.product.update({
     where: { id },
