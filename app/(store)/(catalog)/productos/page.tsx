@@ -49,7 +49,7 @@ export default function HomePage() {
   }, [search, page]);
 
   return (
-    <div className="px-4 py-6">
+    <div className="px-4 py-6 pb-24 md:pb-6">
       {hasUsd && usdRate && (
         <div className="mb-4 px-3 py-2 bg-brand-50 border border-brand-200 rounded-lg text-xs text-brand-800 flex items-center justify-between flex-wrap gap-2">
           <span>Productos en USD se muestran convertidos a pesos</span>

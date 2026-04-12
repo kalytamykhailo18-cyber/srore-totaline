@@ -46,7 +46,7 @@ export default function CategoryPage() {
   }, [slug, page]);
 
   return (
-    <div className="px-4 py-6">
+    <div className="px-4 py-6 pb-24 md:pb-6">
       <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
         <Link href="/" className="hover:text-brand-800">Inicio</Link>
         <span>/</span>

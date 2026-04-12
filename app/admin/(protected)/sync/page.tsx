@@ -76,8 +76,8 @@ export default function AdminSync() {
       </div>
 
       <h2 className="text-lg font-bold text-gray-700 mb-4">Historial</h2>
-      <div className="bg-white rounded-xl border overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded-xl border overflow-x-auto">
+        <table className="min-w-full text-sm whitespace-nowrap">
           <thead className="bg-gray-50 border-b">
             <tr>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Fecha</th>

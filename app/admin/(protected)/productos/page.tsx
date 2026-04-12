@@ -259,7 +259,7 @@ export default function AdminProducts() {
 
       {/* Table */}
       <div className="bg-white rounded-xl border overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="min-w-full text-sm whitespace-nowrap">
           <thead className="bg-gray-50 border-b">
             <tr>
               <th className="text-left px-4 py-3 font-medium text-gray-600">SKU</th>
@@ -280,7 +280,7 @@ export default function AdminProducts() {
             ) : products.map((p) => (
               <tr key={p.id} className={`border-b hover:bg-gray-50 ${!p.active ? "opacity-50" : ""}`}>
                 <td className="px-4 py-3 font-mono text-xs">{p.sku}</td>
-                <td className="px-4 py-3 max-w-[200px] truncate">{p.name}</td>
+                <td className="px-4 py-3">{p.name}</td>
                 <td className="px-4 py-3 text-gray-500">{p.category?.name || "-"}</td>
                 <td className="px-4 py-3 text-right text-gray-400">{formatPrice(p.supplierPrice)}</td>
                 <td className="px-4 py-3 text-right font-medium">{formatPrice(p.resellerPrice)}</td>

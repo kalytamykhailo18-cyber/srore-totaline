@@ -115,7 +115,13 @@ async function scrapeCategory(page: puppeteer.Page, categoryUrl: string, categor
         const imageUrl = imgEl?.src || imgEl?.getAttribute("data-src") || "";
         const url = linkEl?.href || "";
         const stockEl = el.querySelector(".stock.unavailable");
-        const inStock = !stockEl;
+        let inStock = !stockEl;
+        // Also check for "Entrega inmediata: 0 unidades" — Totaline shows this when out of stock
+        const allText = el.textContent || "";
+        const inmediataMatch = allText.match(/[Ee]ntrega\s+inmediata\s*:?\s*(\d+)/);
+        if (inmediataMatch && parseInt(inmediataMatch[1]) === 0) {
+          inStock = false;
+        }
 
         if (name && price > 0 && price < 9000000) {
           items.push({ sku, name, price, imageUrl, inStock, url });
@@ -176,6 +182,84 @@ const GENERIC_CATEGORIES = new Set([
   "Linea Industrial",
   "Linea Comercial",
 ]);
+
+/**
+ * Verify real stock by visiting each product detail page.
+ * Updates inStock based on "Entrega inmediata: X unidades" text.
+ * Deduplicates products by SKU first to avoid visiting the same URL twice.
+ */
+async function verifyStockFromDetailPages(
+  browser: puppeteer.Browser,
+  products: ScrapedProduct[]
+) {
+  console.log(`\nVerificando stock real visitando páginas de detalle...`);
+
+  // Deduplicate by SKU — same product may appear in multiple categories
+  const uniqueBySku = new Map<string, ScrapedProduct>();
+  for (const p of products) {
+    if (p.sku && p.url && !uniqueBySku.has(p.sku)) {
+      uniqueBySku.set(p.sku, p);
+    }
+  }
+  const uniqueList = Array.from(uniqueBySku.values());
+  console.log(`  ${uniqueList.length} productos únicos para verificar`);
+
+  // Concurrency: 4 parallel pages
+  const CONCURRENCY = 4;
+  const stockBySku = new Map<string, boolean>();
+  let processed = 0;
+
+  async function processOne(p: ScrapedProduct) {
+    const tab = await browser.newPage();
+    try {
+      await tab.goto(p.url, { waitUntil: "networkidle2", timeout: 20000 });
+      await new Promise((r) => setTimeout(r, 1500));
+      const inStock = await tab.evaluate(() => {
+        // Look at every inventory-qty-row; find the one mentioning "Entrega inmediata"
+        const rows = document.querySelectorAll(".inventory-qty-row, .quantity-info");
+        for (const row of Array.from(rows)) {
+          const txt = (row.textContent || "").replace(/\s+/g, " ").trim();
+          if (/[Ee]ntrega\s+inmediata/.test(txt)) {
+            const m = txt.match(/(\d+)\s*unidades?/);
+            if (m) return parseInt(m[1]) > 0;
+          }
+        }
+        // Fallback: scan whole body
+        const body = (document.body.textContent || "").replace(/\s+/g, " ");
+        const m = body.match(/[Ee]ntrega\s+inmediata[^0-9]*(\d+)\s*unidades?/);
+        if (m) return parseInt(m[1]) > 0;
+        if (/[Aa]gotado|no\s+disponible|sin\s+stock/.test(body)) return false;
+        return true;
+      });
+      stockBySku.set(p.sku, inStock);
+    } catch {
+      // On error keep the original listing flag
+    } finally {
+      await tab.close();
+      processed++;
+      if (processed % 50 === 0) {
+        console.log(`  ${processed}/${uniqueList.length}`);
+      }
+    }
+  }
+
+  // Run in batches
+  for (let i = 0; i < uniqueList.length; i += CONCURRENCY) {
+    const batch = uniqueList.slice(i, i + CONCURRENCY);
+    await Promise.all(batch.map(processOne));
+  }
+
+  // Apply updates back to all matching products
+  let updated = 0;
+  for (const p of products) {
+    if (stockBySku.has(p.sku)) {
+      const real = stockBySku.get(p.sku)!;
+      if (p.inStock !== real) updated++;
+      p.inStock = real;
+    }
+  }
+  console.log(`  Verificados ${stockBySku.size} productos. Cambios de stock: ${updated}`);
+}
 
 async function syncProducts(products: ScrapedProduct[]) {
   console.log(`\nSyncing ${products.length} products to database...`);
@@ -327,6 +411,9 @@ async function main() {
     }
 
     console.log(`\nTotal products scraped: ${allProducts.length}`);
+
+    // Verify stock by visiting product detail pages (slow but accurate)
+    await verifyStockFromDetailPages(browser, allProducts);
 
     // Sync to database
     await syncProducts(allProducts);
