@@ -68,3 +68,42 @@ model Setting {
 
   @@map("settings")
 }
+
+// WhatsApp Inbox
+model WhatsAppChat {
+  chatId        String   @id @db.VarChar(50)
+  contactName   String   @default("") @db.VarChar(100)
+  contactPhone  String   @default("") @db.VarChar(20)
+  lastMessage   String   @default("") @db.VarChar(200)
+  lastMessageAt DateTime @default(now())
+  unread        Int      @default(0)
+  aiPaused      Boolean  @default(false)
+  messages      WhatsAppMessage[]
+
+  @@map("whatsapp_chats")
+}
+
+model WhatsAppMessage {
+  id        Int      @id @default(autoincrement())
+  chatId    String   @db.VarChar(50)
+  direction String   @db.VarChar(3) // "in" | "out"
+  body      String   @db.Text
+  sender    String   @default("") @db.VarChar(30) // "contact" | "human" | "bot"
+  mediaType String?  @db.VarChar(20) // "image" | "video" | "audio" | "document"
+  mediaUrl  String?  @db.VarChar(500)
+  timestamp DateTime @default(now())
+  chat      WhatsAppChat @relation(fields: [chatId], references: [chatId])
+
+  @@index([chatId])
+  @@map("whatsapp_messages")
+}
+
+model QuickReply {
+  id        Int      @id @default(autoincrement())
+  shortcut  String   @unique @db.VarChar(30)
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("quick_replies")
+}

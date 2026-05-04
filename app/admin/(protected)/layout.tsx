@@ -9,6 +9,7 @@ const links = [
   { href: "/admin/productos", label: "Productos" },
   { href: "/admin/categorias", label: "Categorías" },
   { href: "/admin/sync", label: "Sincronización" },
+  { href: "/admin/inbox", label: "Inbox" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
