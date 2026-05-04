@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // Send via WhatsApp bot
-    const botPort = process.env.BOT_PORT || "3001";
+    const botPort = process.env.BOT_PORT || "3002";
     const sendBody: Record<string, string> = { chatId, sender: "human" };
     if (message) sendBody.message = message;
     if (mediaUrl) sendBody.mediaUrl = mediaUrl;
