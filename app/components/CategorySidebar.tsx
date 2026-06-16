@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { HiMenu } from "react-icons/hi";
 
 interface Category {
   id: number;
@@ -48,11 +47,17 @@ export default function CategorySidebar() {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  // Listen for Navbar "Categorías" button click
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("openCategoriesSidebar", handler);
+    return () => window.removeEventListener("openCategoriesSidebar", handler);
+  }, []);
+
   const filtered = useMemo(() => {
-    const visible = categories.filter((c) => c._count.products > 0);
-    if (!filter.trim()) return visible;
+    if (!filter.trim()) return categories;
     const term = filter.toLowerCase();
-    return visible.filter((c) => c.name.toLowerCase().includes(term));
+    return categories.filter((c) => c.name.toLowerCase().includes(term));
   }, [categories, filter]);
 
   const sidebarContent = (
@@ -106,14 +111,6 @@ export default function CategorySidebar() {
 
   return (
     <>
-      {/* Mobile toggle */}
-      <button
-        onClick={() => setOpen(true)}
-        className="md:hidden fixed bottom-4 left-4 z-30 flex items-center gap-2 px-4 py-3 bg-brand-800 text-white rounded-full shadow-lg text-sm font-medium"
-      >
-        <HiMenu className="w-5 h-5" />
-        Categorías
-      </button>
 
       {/* Mobile overlay */}
       <div

@@ -30,6 +30,8 @@ model Product {
   resellerPrice   Decimal  @db.Decimal(14, 2)
   currency        String   @default("ARS") @db.VarChar(3)
   stockStatus     Boolean  @default(true)
+  stockOverride   Boolean?
+  modelCode       String?  @db.VarChar(80)
   categoryId      Int?
   category        Category? @relation(fields: [categoryId], references: [id])
   imageUrl        String?  @db.VarChar(500)

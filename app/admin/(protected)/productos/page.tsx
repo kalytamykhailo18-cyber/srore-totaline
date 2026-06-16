@@ -207,9 +207,14 @@ export default function AdminProducts() {
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Productos ({total})</h1>
-        <button onClick={() => setShowForm(!showForm)} className="btn-primary text-sm">
-          {showForm ? "Cancelar" : "+ Agregar producto manual"}
-        </button>
+        <div className="flex gap-2 flex-wrap">
+          <a href="/admin/productos/importar" className="px-3 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700">
+            ↥ Importar Excel
+          </a>
+          <button onClick={() => setShowForm(!showForm)} className="btn-primary text-sm">
+            {showForm ? "Cancelar" : "+ Agregar producto manual"}
+          </button>
+        </div>
       </div>
 
       {/* Create form */}

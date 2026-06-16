@@ -7,6 +7,7 @@ interface Props {
   product: {
     id: number;
     sku: string;
+    modelCode?: string | null;
     name: string;
     resellerPrice: number;
     resellerPriceUsd?: number | null;
@@ -32,14 +33,14 @@ export default function ProductCard({ product }: Props) {
           src={imgSrc}
           alt={product.name}
           fill
-          className="object-contain p-2"
+          className={`object-contain p-2 ${!product.stockStatus ? "grayscale opacity-70" : ""}`}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           unoptimized
         />
         {!product.stockStatus && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">Sin stock</span>
-          </div>
+          <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-md text-xs font-medium shadow-sm">
+            Sin stock
+          </span>
         )}
       </Link>
       <div className="p-3 flex flex-col flex-1">
@@ -51,7 +52,7 @@ export default function ProductCard({ product }: Props) {
         <Link href={`/producto/${product.id}`} className="text-sm font-medium text-gray-800 hover:text-brand-800 line-clamp-2 mb-2 flex-1">
           {product.name}
         </Link>
-        <p className="text-xs text-gray-400 mb-1">SKU: {product.sku}</p>
+        <p className="text-xs text-gray-500 mb-1 font-mono truncate" title={product.modelCode || product.sku}>{product.modelCode || product.sku}</p>
         <div className="flex items-center justify-between mt-auto">
           <div>
             <span className="text-lg font-bold text-brand-800">{formatPrice(product.resellerPrice)}</span>

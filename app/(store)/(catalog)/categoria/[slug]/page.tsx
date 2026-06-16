@@ -7,6 +7,7 @@ import Link from "next/link";
 interface Product {
   id: number;
   sku: string;
+  modelCode?: string | null;
   name: string;
   resellerPrice: number;
   localImage: string | null;

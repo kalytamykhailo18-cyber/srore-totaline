@@ -5,6 +5,7 @@ import ProductCard from "../../../components/ProductCard";
 interface Product {
   id: number;
   sku: string;
+  modelCode?: string | null;
   name: string;
   resellerPrice: number;
   localImage: string | null;

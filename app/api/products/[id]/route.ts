@@ -23,6 +23,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     supplierPrice: Number(product.supplierPrice),
     resellerPrice: isUsd ? Math.round(reseller * usdRate) : reseller,
     resellerPriceUsd: isUsd ? reseller : null,
+    stockStatus: product.stockOverride ?? product.stockStatus,
     usdRate,
   });
 }

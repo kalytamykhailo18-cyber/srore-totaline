@@ -9,6 +9,7 @@ import { formatPrice } from "../../../../components/ProductCard";
 interface Product {
   id: number;
   sku: string;
+  modelCode?: string | null;
   name: string;
   description: string | null;
   resellerPrice: number;
@@ -114,7 +115,7 @@ export default function ProductPage() {
         {/* Details */}
         <div>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.name}</h1>
-          <p className="text-sm text-gray-400 mb-4">SKU: {product.sku}</p>
+          <p className="text-sm text-gray-500 mb-4 font-mono">{product.modelCode || product.sku}</p>
 
           <div className="text-3xl font-bold text-brand-800 mb-6">
             {formatPrice(product.resellerPrice)}

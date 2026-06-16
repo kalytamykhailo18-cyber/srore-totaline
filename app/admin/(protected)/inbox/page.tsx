@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { HiPaperAirplane, HiPaperClip, HiArrowLeft, HiLightningBolt } from "react-icons/hi";
+import { HiPaperAirplane, HiPaperClip, HiArrowLeft, HiMicrophone, HiStop } from "react-icons/hi";
 
 interface Chat {
   chatId: string;
@@ -46,6 +46,19 @@ export default function InboxPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [quickReplies, setQuickReplies] = useState<Array<{ shortcut: string; body: string }>>([]);
   const [showQuickReplies, setShowQuickReplies] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const loadQuickReplies = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/quick-replies");
+      const d = await res.json();
+      setQuickReplies(d.replies || []);
+    } catch {}
+  }, []);
 
   const loadChats = useCallback(async () => {
     try {
@@ -63,7 +76,7 @@ export default function InboxPage() {
     } catch {}
   }, []);
 
-  useEffect(() => { loadChats(); }, [loadChats]);
+  useEffect(() => { loadChats(); loadQuickReplies(); }, [loadChats, loadQuickReplies]);
 
   // Poll for new messages
   useEffect(() => {
@@ -118,6 +131,32 @@ export default function InboxPage() {
       loadMessages(selectedChat);
     } catch {}
     setUploading(false);
+  }
+
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      chunksRef.current = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        const file = new File([blob], `audio-${Date.now()}.webm`, { type: "audio/webm" });
+        await uploadFile(file);
+      };
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setRecording(true);
+      setRecordingTime(0);
+      timerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
+    } catch { alert("No se pudo acceder al microfono"); }
+  }
+
+  function stopRecording() {
+    mediaRecorderRef.current?.stop();
+    setRecording(false);
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
   }
 
   async function toggleAI() {
@@ -259,10 +298,23 @@ export default function InboxPage() {
                 placeholder={uploading ? "Subiendo..." : "Escribir mensaje..."}
                 disabled={sending || uploading}
                 className="flex-1 px-3 py-2 bg-gray-100 rounded-lg text-sm focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-400 disabled:opacity-50" />
-              <button onClick={sendMessage} disabled={!input.trim() || sending}
-                className="p-2 text-blue-500 hover:text-blue-600 disabled:opacity-30">
-                <HiPaperAirplane className="w-5 h-5 rotate-90" />
-              </button>
+              {recording ? (
+                <button onClick={stopRecording}
+                  className="p-2 text-red-500 hover:text-red-600 animate-pulse flex items-center gap-1">
+                  <HiStop className="w-5 h-5" />
+                  <span className="text-xs">{Math.floor(recordingTime / 60)}:{String(recordingTime % 60).padStart(2, "0")}</span>
+                </button>
+              ) : input.trim() ? (
+                <button onClick={sendMessage} disabled={sending}
+                  className="p-2 text-blue-500 hover:text-blue-600 disabled:opacity-30">
+                  <HiPaperAirplane className="w-5 h-5 rotate-90" />
+                </button>
+              ) : (
+                <button onClick={startRecording} disabled={uploading}
+                  className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30">
+                  <HiMicrophone className="w-5 h-5" />
+                </button>
+              )}
             </div>
           </>
         ) : (

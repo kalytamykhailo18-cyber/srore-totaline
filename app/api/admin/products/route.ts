@@ -86,7 +86,9 @@ export async function PATCH(req: NextRequest) {
   if (data.description !== undefined) update.description = data.description;
   if (data.resellerPrice !== undefined) update.resellerPrice = data.resellerPrice;
   if (data.categoryId !== undefined) update.categoryId = data.categoryId || null;
-  if (data.stockStatus !== undefined) update.stockStatus = data.stockStatus;
+  if (data.stockStatus !== undefined) update.stockOverride = data.stockStatus;
+  if (data.stockOverride !== undefined) update.stockOverride = data.stockOverride;
+  if (data.modelCode !== undefined) update.modelCode = data.modelCode || null;
   if (data.active !== undefined) update.active = data.active;
   if (data.imageUrl !== undefined) update.imageUrl = data.imageUrl;
   if (data.currency !== undefined) update.currency = data.currency === "USD" ? "USD" : "ARS";

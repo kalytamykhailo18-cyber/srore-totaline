@@ -46,6 +46,7 @@ export async function GET(req: NextRequest) {
       resellerPrice: isUsd ? Math.round(reseller * usdRate) : reseller,
       resellerPriceUsd: isUsd ? reseller : null,
       currency: p.currency,
+      stockStatus: p.stockOverride ?? p.stockStatus,
     };
   });
 

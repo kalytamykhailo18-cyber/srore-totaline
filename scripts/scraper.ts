@@ -62,16 +62,25 @@ async function login(page: puppeteer.Page): Promise<boolean> {
   await page.type("#email", TOTALINE_EMAIL, { delay: 20 });
   await page.type("#pass", TOTALINE_PASSWORD, { delay: 20 });
 
-  // Click login button
+  // Click login button — try multiple strategies since Totaline changed the form
   await page.evaluate(() => {
-    const btn = document.querySelector("#send2") as HTMLButtonElement;
-    if (btn) btn.click();
+    const sel1 = document.querySelector("#send2") as HTMLButtonElement | null;
+    if (sel1) { sel1.click(); return; }
+    const submitBtn = document.querySelector("button[type='submit']") as HTMLButtonElement | null;
+    if (submitBtn) { submitBtn.click(); return; }
+    const buttons = Array.from(document.querySelectorAll("button")) as HTMLButtonElement[];
+    for (const b of buttons) {
+      const t = (b.textContent || "").trim().toUpperCase();
+      if (t.includes("CONTINUAR") || t.includes("INICIAR") || t.includes("INGRESAR")) { b.click(); return; }
+    }
+    const form = (document.querySelector("#email") as HTMLElement | null)?.closest("form") as HTMLFormElement | null;
+    if (form) form.submit();
   });
 
-  await new Promise((r) => setTimeout(r, 5000));
+  await new Promise((r) => setTimeout(r, 7000));
   const url = page.url();
   const loggedIn = !url.includes("login");
-  console.log(loggedIn ? "Login successful!" : "Login FAILED");
+  console.log(loggedIn ? `Login successful! (url: ${url})` : `Login FAILED (url: ${url})`);
   return loggedIn;
 }
 
